@@ -1,3 +1,4 @@
+const https = require('https');
 const core = require('@actions/core');
 const fs = require('fs');
 const fetch = require('node-fetch');
