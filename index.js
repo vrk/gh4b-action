@@ -4,9 +4,6 @@ const fs = require('fs');
 // most @actions toolkit packages have async methods
 async function run() {
   try {
-    const results = await fetch("https://dog.ceo/api/breeds/image/random");
-    const data = await results.json();
-    const url = data.message;
     await downloadFile(url, "dog.png");
   } catch (error) {
     core.setFailed(error.message);
