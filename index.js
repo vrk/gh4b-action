@@ -1,10 +1,14 @@
 const core = require('@actions/core');
 const fs = require('fs');
+const fetch = require('node-fetch');
 
 // most @actions toolkit packages have async methods
 async function run() {
   try {
-    console.log('v3????');
+    console.log("try again");
+    const results = await fetch("https://dog.ceo/api/breeds/image/random");
+    const data = await results.json();
+    const url = data.message;
     await downloadFile(url, "dog.png");
   } catch (error) {
     core.setFailed(error.message);
