@@ -1,21 +1,32 @@
 const core = require('@actions/core');
-const wait = require('./wait');
-
+const fs = require('fs');
 
 // most @actions toolkit packages have async methods
 async function run() {
   try {
-    const ms = core.getInput('milliseconds');
-    core.info(`Waiting ${ms} milliseconds ...`);
-
-    core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-    await wait(parseInt(ms));
-    core.info((new Date()).toTimeString());
-
-    core.setOutput('time', new Date().toTimeString());
+    const results = await fetch("https://dog.ceo/api/breeds/image/random");
+    const data = await results.json();
+    const url = data.message;
+    await downloadFile(url, "dog.png");
   } catch (error) {
     core.setFailed(error.message);
   }
 }
+
+async function downloadFile(url, filename) {
+  return new Promise(resolve => {
+    https.get(url, (res) => {
+      const fileStream = fs.createWriteStream(filename);
+      res.pipe(fileStream);
+
+      fileStream.on('finish', () => {
+        fileStream.close();
+        console.log('Download finished')
+        resolve();
+      });
+    })
+  });
+}
+
 
 run();
