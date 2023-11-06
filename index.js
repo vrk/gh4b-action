@@ -9,6 +9,11 @@ async function run() {
   try {
     const results = await fetch("https://dog.ceo/api/breeds/image/random");
     const data = await results.json();
+
+    if (!results.ok) {
+      throw new Error('Network response failed.');
+    }
+
     const url = data.message;
     await downloadFile(url, "dog.png");
   } catch (error) {
