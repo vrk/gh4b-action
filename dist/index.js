@@ -1,6 +1,77 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 2932:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const https = __nccwpck_require__(5687);
+const core = __nccwpck_require__(2186);
+const fs = __nccwpck_require__(7147);
+const fetch = __nccwpck_require__(467);
+
+async function run() {
+  console.log("try again??");
+  try {
+    const url = await getDogUrl();
+    await downloadAndSaveFile(url, "dog.png");
+  } catch (error) {
+    core.setFailed(error.message);
+  }
+}
+
+async function getDogUrl() {
+  const results = await fetch("https://dog.ceo/api/breeds/image/random");
+
+  if (!results.ok) {
+    throw new Error(`Fetch failed with status: ${results.status} ${results.statusText}`);
+  }
+
+  const data = await results.json();
+
+  return data.message;
+}
+
+async function downloadAndSaveFile(url, filename) {
+  const dataStream = await getDataStream(url);
+
+  const fileStream = fs.createWriteStream(filename);
+  dataStream.pipe(fileStream);
+
+  return new Promise((resolve, reject) => {
+    fileStream.on('finish', () => {
+      fileStream.close();
+      console.log('Download finished');
+      resolve();
+    });
+
+    fileStream.on('error', (error) => {
+      reject(new Error(`File write error: ${error.message}`));
+    });
+  });
+}
+
+function getDataStream(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      if (res.statusCode < 200 || res.statusCode >= 300) {
+        return reject(new Error(`Download failed with status code ${res.statusCode} ${res.statusMessage}`));
+      }
+
+      resolve(res);
+    });
+  });
+}
+
+run();
+
+module.exports = {
+  getDataStream,
+  getDogUrl,
+};
+
+
+/***/ }),
+
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -6819,53 +6890,13 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
-const https = __nccwpck_require__(5687);
-const core = __nccwpck_require__(2186);
-const fs = __nccwpck_require__(7147);
-const fetch = __nccwpck_require__(467);
-
-// most @actions toolkit packages have async methods
-async function run() {
-  console.log("try again??");
-  try {
-    const results = await fetch("https://dog.ceo/api/breeds/image/random");
-    const data = await results.json();
-
-    if (!results.ok) {
-      throw new Error('Network response failed.');
-    }
-
-    const url = data.message;
-    await downloadFile(url, "dog.png");
-  } catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-async function downloadFile(url, filename) {
-  return new Promise(resolve => {
-    https.get(url, (res) => {
-      const fileStream = fs.createWriteStream(filename);
-      res.pipe(fileStream);
-
-      fileStream.on('finish', () => {
-        fileStream.close();
-        console.log('Download finished')
-        resolve();
-      });
-    })
-  });
-}
-
-
-run();
-
-})();
-
-module.exports = __webpack_exports__;
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(2932);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
